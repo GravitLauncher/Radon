@@ -17,9 +17,11 @@
 
 package me.itzsomebody.radon;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -310,9 +312,29 @@ public class Radon {
 
         private ClassNode returnClazz(String ref) {
             ClassWrapper clazz = classPath.get(ref);
-            if (clazz == null)
-                throw new MissingClassException(ref + " does not exist in classpath!");
-
+            if (clazz == null) {
+            	if (!Boolean.getBoolean("radon.useJVMCP")) throw new MissingClassException(ref + " does not exist in classpath!");
+            	InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
+            	if (in == null)
+            		throw new MissingClassException(ref + " does not exist in classpath!");
+                try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                    byte[] buffer = new byte[8192];
+                    for (int length = in.read(buffer); length >= 0; length = in.read(buffer)) {
+                        output.write(buffer, 0, length);
+                    }
+                    in.close();
+                    ClassReader r = new ClassReader(output.toByteArray());
+                    ClassNode toRet = new ClassNode();
+                    r.accept(toRet, 0);
+                    return toRet;
+                } catch (IOException e) {
+                    try {
+						in.close();
+					} catch (IOException e1) {
+					}
+            		throw new MissingClassException(ref + " does not exist in classpath!");
+				}
+            }
             return clazz.classNode;
         }
 
