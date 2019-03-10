@@ -41,7 +41,6 @@ public class ExclusionManager {
             if ((exclusion.getExclusionType() == type || exclusion.getExclusionType() == ExclusionType.GLOBAL)
                     && exclusion.matches(pattern))
                 return true;
-
         return false;
     }
 }

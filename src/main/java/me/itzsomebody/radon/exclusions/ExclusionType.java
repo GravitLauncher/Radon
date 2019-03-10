@@ -24,8 +24,6 @@ package me.itzsomebody.radon.exclusions;
  */
 public enum ExclusionType {
     GLOBAL("Global"),
-    EXTENDS("Extends"), // TODO
-    IMPLEMENTS("Implements"), // TODO
     STRING_ENCRYPTION("StringEncryption"),
     INVOKEDYNAMIC("InvokeDynamic"),
     FLOW_OBFUSCATION("FlowObfuscation"),
