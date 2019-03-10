@@ -17,7 +17,6 @@
 
 package me.itzsomebody.radon.config;
 
-import java.io.File;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,17 +46,12 @@ import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.MemberShuffle
 import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.SourceDebug;
 import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.SourceName;
 import me.itzsomebody.radon.transformers.obfuscators.numbers.NumberObfuscation;
-import me.itzsomebody.radon.transformers.obfuscators.renamer.Renamer;
-import me.itzsomebody.radon.transformers.obfuscators.renamer.RenamerSetup;
 import me.itzsomebody.radon.transformers.obfuscators.strings.StringEncryption;
 import me.itzsomebody.radon.transformers.obfuscators.strings.StringEncryptionSetup;
 import me.itzsomebody.radon.transformers.obfuscators.strings.StringPool;
 import me.itzsomebody.radon.transformers.optimizers.Optimizer;
 import me.itzsomebody.radon.transformers.optimizers.OptimizerDelegator;
 import me.itzsomebody.radon.transformers.optimizers.OptimizerSetup;
-import me.itzsomebody.radon.transformers.shrinkers.Shrinker;
-import me.itzsomebody.radon.transformers.shrinkers.ShrinkerDelegator;
-import me.itzsomebody.radon.transformers.shrinkers.ShrinkerSetup;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -65,6 +59,7 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author ItzSomebody
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ConfigurationParser {
     private Map<String, Object> map;
     private final static Set<String> VALID_KEYS = new HashSet<>();
@@ -84,94 +79,16 @@ public class ConfigurationParser {
 
     public SessionInfo createSessionFromConfig() {
         SessionInfo info = new SessionInfo();
-        info.setInput(getInput());
-        info.setOutput(getOutput());
-        info.setLibraries(getLibraries());
         info.setTransformers(getTransformers());
         info.setExclusions(getExclusions());
         info.setTrashClasses(getTrashClasses());
         info.setDictionaryType(getDictionary());
-
         return info;
-    }
-
-    private File getInput() {
-        Object o = map.get(ConfigurationSetting.INPUT.getValue());
-        if (!(o instanceof String))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.INPUT.getValue(), String.class,
-                    o.getClass());
-
-        return new File((String) o);
-    }
-
-    private File getOutput() {
-        Object o = map.get(ConfigurationSetting.OUTPUT.getValue());
-        if (!(o instanceof String))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.OUTPUT.getValue(), String.class,
-                    o.getClass());
-
-        return new File((String) o);
-    }
-
-    private List<File> getLibraries() {
-        Object o = map.get(ConfigurationSetting.LIBRARIES.getValue());
-        if (!(o instanceof List))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.LIBRARIES.getValue(), List.class,
-                    o.getClass());
-
-        ArrayList<File> libraries = new ArrayList<>();
-        List<?> libs = (List) o;
-        for (Object lib : libs) {
-            try {
-                String s = (String) lib;
-                File libFile = new File(s);
-                if (libFile.isDirectory()) {
-                    addSubDirFiles(libFile, libraries);
-                } else {
-                    libraries.add(libFile);
-                }
-            } catch (ClassCastException e) {
-                throw new IllegalConfigurationValueException(ConfigurationSetting.LIBRARIES.getValue(), String.class,
-                        lib.getClass());
-            }
-        }
-
-        return libraries;
-    }
-
-    /**
-     * Searches sub directories for libraries
-     *
-     * @param file      should be directory
-     * @param libraries
-     * @author Richard Xing
-     */
-    private static void addSubDirFiles(File file, List<File> libraries) {
-        if (file.isFile()) {
-            System.out.println("should be a directory");
-        } else {
-            File[] fileLists = file.listFiles();
-
-            for (int i = 0; i < fileLists.length; i++) {
-                // 输出元素名称
-
-                if (fileLists[i].isDirectory()) {
-                    addSubDirFiles(fileLists[i], libraries);
-                } else {
-                    if (fileLists[i].getName().toLowerCase().endsWith(".jar")) {
-                        //System.out.println(fileLists[i].getName());
-                        libraries.add(fileLists[i]);
-                    }
-                }
-            }
-        }
     }
 
     private List<Transformer> getTransformers() {
         ArrayList<Transformer> transformers = new ArrayList<>();
-        transformers.add(getShrinkerTransformer());
         transformers.add(getOptimizerTransformer());
-        transformers.add(getRenamerTransformer());
         transformers.add(getNumberObfuscationTransformer());
         transformers.add(getInvokeDynamicTransformer());
         List<StringEncryption> stringEncrypters = getStringEncryptionTransformers();
@@ -190,31 +107,6 @@ public class ConfigurationParser {
         transformers.add(getWatermarkerTransformer());
 
         return transformers;
-    }
-
-    private Shrinker getShrinkerTransformer() {
-        Object o = map.get(ConfigurationSetting.SHRINKER.getValue());
-        if (o == null)
-            return null;
-        if (!(o instanceof Map))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.SHRINKER.getValue(), Map.class,
-                    o.getClass());
-
-        try {
-            Map<String, Boolean> shrinkerSettings = (Map) o;
-            if (!shrinkerSettings.get("Enabled"))
-                return null;
-
-            boolean attributes = shrinkerSettings.getOrDefault("RemoveAttributes", false);
-            boolean debug = shrinkerSettings.getOrDefault("RemoveDebug", false);
-            boolean invisibleAnnotations = shrinkerSettings.getOrDefault("RemoveInvisibleAnnotations", false);
-            boolean visibleAnnotations = shrinkerSettings.getOrDefault("RemoveVisibleAnnotations", false);
-
-            return new ShrinkerDelegator(new ShrinkerSetup(visibleAnnotations, invisibleAnnotations, attributes,
-                    debug));
-        } catch (ClassCastException e) {
-            throw new IllegalConfigurationValueException("Error while parsing shrinker setup: " + e.getMessage());
-        }
     }
 
     private Optimizer getOptimizerTransformer() {
@@ -237,34 +129,6 @@ public class ConfigurationParser {
             return new OptimizerDelegator(new OptimizerSetup(nopInstructions, gotoGoto, gotoReturn));
         } catch (ClassCastException e) {
             throw new IllegalConfigurationValueException("Error while parsing optimizer setup: " + e.getMessage());
-        }
-    }
-
-    private Renamer getRenamerTransformer() {
-        Object o = map.get(ConfigurationSetting.RENAMER.getValue());
-        if (o == null)
-            return null;
-        if (!(o instanceof Map))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.RENAMER.getValue(), Map.class,
-                    o.getClass());
-
-        try {
-            Map<String, Object> renamerSettings = (Map) o;
-            if (!(boolean) renamerSettings.get("Enabled"))
-                return null;
-
-            List objects = (List) renamerSettings.getOrDefault("AdaptResources", new ArrayList<String>());
-            String[] adaptThese = new String[objects.size()];
-
-            for (int i = 0; i < objects.size(); i++) {
-                adaptThese[i] = (String) objects.get(i);
-            }
-
-            String repackageName = (String) renamerSettings.get("Repackage");
-
-            return new Renamer(new RenamerSetup(adaptThese, repackageName));
-        } catch (ClassCastException e) {
-            throw new IllegalConfigurationValueException("Error while parsing renamer setup: " + e.getMessage());
         }
     }
 
@@ -300,15 +164,14 @@ public class ConfigurationParser {
         return InvokeDynamic.getTransformerFromString(s);
     }
 
-    private List<StringEncryption> getStringEncryptionTransformers() {
+	private List<StringEncryption> getStringEncryptionTransformers() {
         Object o = map.get(ConfigurationSetting.STRING_ENCRYPTION.getValue());
         if (o == null)
             return null;
         if (!(o instanceof Map))
             throw new IllegalConfigurationValueException(ConfigurationSetting.STRING_ENCRYPTION.getValue(), Map.class,
                     o.getClass());
-
-        Map<String, Object> settings = (Map) o;
+		Map<String, Object> settings = (Map) o;
         if (!(boolean) settings.get("Enabled"))
             return null;
 

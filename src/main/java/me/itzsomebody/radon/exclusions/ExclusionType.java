@@ -40,8 +40,7 @@ public enum ExclusionType {
     SHUFFLER("Shuffler"),
     SOURCE_NAME("SourceName"),
     SOURCE_DEBUG("SourceDebug"),
-    STRING_POOL("StringPool"),
-    RENAMER("Renamer");
+    STRING_POOL("StringPool");
 
     private final String value;
 

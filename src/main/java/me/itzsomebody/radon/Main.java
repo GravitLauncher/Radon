@@ -20,20 +20,10 @@ package me.itzsomebody.radon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.zip.ZipFile;
-import me.itzsomebody.radon.cli.CommandArgumentsParser;
 import me.itzsomebody.radon.config.ConfigurationParser;
-import me.itzsomebody.radon.utils.IOUtils;
-import me.itzsomebody.radon.utils.WatermarkUtils;
 
 /**
- * Main class of obfuscator. \o/
- * TODO: Renamer transformer should correct strings used for reflection. (i.e. Class.forName("me.itzsomebody.Thing"))
- * TODO: Remove the "light, medium & heavy" garbage by allowing for individual compenent enabling.
- * TODO: Clean code up in general.
- * TODO: Remove debug obfuscation - it's pointless and you might as well just remove the info.
- *
+ * Main class of obfuscator.
  * @author ItzSomebody
  */
 public class Main {
@@ -61,22 +51,7 @@ public class Main {
      * @param args arguments from command line.
      */
     public static void main(String[] args) {
-        System.out.println(RADON_ASCII_ART);
-        Logger.stdOut("Version: " + VERSION);
-        Logger.stdOut("Contributors: " + CONTRIBUTORS + "\n");
-
-        CommandArgumentsParser.registerCommandSwitch("help", 0);
-        CommandArgumentsParser.registerCommandSwitch("license", 0);
-        CommandArgumentsParser.registerCommandSwitch("config", 1);
-        CommandArgumentsParser.registerCommandSwitch("extract", 2);
-
-        CommandArgumentsParser parser = new CommandArgumentsParser(args);
-        if (parser.containsSwitch("help")) {
-            showHelpMenu();
-        } else if (parser.containsSwitch("license")) {
-            showLicense();
-        } else if (parser.containsSwitch("config")) {
-            File file = new File(parser.getSwitchArgs("config")[0]);
+            File file = new File("config.yml");
             ConfigurationParser config;
             try {
                 config = new ConfigurationParser(new FileInputStream(file));
@@ -87,43 +62,5 @@ public class Main {
 
             Radon radon = new Radon(config.createSessionFromConfig());
             radon.run();
-        } else if (parser.containsSwitch("extract")) {
-            String[] switchArgs = parser.getSwitchArgs("extract");
-            File leaked = new File(switchArgs[0]);
-            if (!leaked.exists()) {
-                Logger.stdErr("Input file not found");
-                return;
-            }
-
-            try {
-                List<String> ids = WatermarkUtils.extractIds(new ZipFile(leaked), switchArgs[1]);
-                ids.forEach(Logger::stdOut);
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-        } else {
-            showHelpMenu();
-        }
-
-        Logger.dumpLog();
-    }
-
-    private static String getProgramName() {
-        return new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
-    }
-
-    /**
-     * Prints help message into console.
-     */
-    private static void showHelpMenu() {
-        String name = getProgramName();
-        Logger.stdOut(String.format("CLI Usage:\t\t\tjava -jar %s --config example.config", name));
-        Logger.stdOut(String.format("Help Menu:\t\t\tjava -jar %s --help", name));
-        Logger.stdOut(String.format("License:\t\t\tjava -jar %s --license", name));
-        Logger.stdOut(String.format("Watermark Extraction:\tjava -jar %s --extract Input.jar exampleKey", name));
-    }
-
-    private static void showLicense() {
-        System.out.println(new String(IOUtils.toByteArray(Main.class.getResourceAsStream("/license.txt"))));
     }
 }

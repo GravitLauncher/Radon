@@ -1,7 +1,9 @@
 package me.itzsomebody.radon.exceptions;
 
 public class RadonException extends RuntimeException {
-    public RadonException() {
+	private static final long serialVersionUID = -3890080206593518650L;
+
+	public RadonException() {
         super();
     }
 

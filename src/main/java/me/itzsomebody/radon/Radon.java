@@ -102,14 +102,12 @@ public class Radon {
                     entry.setCompressedSize(-1);
 
                     ClassWriter cw = new CustomClassWriter(ClassWriter.COMPUTE_FRAMES);
-                    cw.newUTF8("RADON" + Main.VERSION);
                     try {
                         classWrapper.classNode.accept(cw);
                     } catch (Throwable t) {
                         Logger.stdErr(String.format("Error writing class %s. Skipping frames.", classWrapper.classNode.name + ".class"));
                         t.printStackTrace();
                         cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-                        cw.newUTF8("RADON" + Main.VERSION);
                         classWrapper.classNode.accept(cw);
                     }
 
@@ -149,7 +147,7 @@ public class Radon {
             if (file.exists()) {
                 Logger.stdOut(String.format("Loading library \"%s\".", file.getAbsolutePath()));
                 try {
-                    ZipFile zipFile = new ZipFile(file);
+                    try (ZipFile zipFile = new ZipFile(file)) {
                     Enumeration<? extends ZipEntry> entries = zipFile.entries();
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
@@ -165,6 +163,7 @@ public class Radon {
                                 // Don't care.
                             }
                         }
+                    }
                     }
                 } catch (ZipException e) {
                     Logger.stdErr(String.format("Library \"%s\" could not be opened as a zip file.", file.getAbsolutePath()));
@@ -184,7 +183,7 @@ public class Radon {
         if (input.exists()) {
             Logger.stdOut(String.format("Loading input \"%s\".", input.getAbsolutePath()));
             try {
-                ZipFile zipFile = new ZipFile(input);
+                try (ZipFile zipFile = new ZipFile(input)) {
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
@@ -214,6 +213,7 @@ public class Radon {
                             this.resources.put(entry.getName(), IOUtils.toByteArray(zipFile.getInputStream(entry)));
                         }
                     }
+                }
                 }
             } catch (ZipException e) {
                 Logger.stdErr(String.format("Input file \"%s\" could not be opened as a zip file.", input.getAbsolutePath()));
