@@ -10,7 +10,6 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-tst/
 
 # External tool builders
 .externalToolBuilders/
@@ -86,7 +85,7 @@ fabric.properties
 modules.xml
 .idea/misc.xml
 *.ipr
-Launcher.iws
+Radon.iws
 
 ### Gradle ###
 .gradle

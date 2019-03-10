@@ -1,0 +1,53 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+	maven { url 'http://oss.sonatype.org/content/groups/public' }
+}
+
+configurations {
+	bundle
+	pack
+	compile.extendsFrom bundle, pack
+}
+
+String mainClassName = "me.itzsomebody.radon.Main"
+String mainAgentName = "ru.zaxar163.util.StarterAgent"
+
+jar {
+	from(configurations.pack.collect { it.isDirectory() ? it : zipTree(it) }) {
+		exclude 'META-INF/*'
+	}
+	manifest.attributes("Main-Class": mainClassName,
+		"Premain-Class": mainAgentName,
+		"Can-Redefine-Classes": "true",
+		"Can-Retransform-Classes": "true",
+		"Can-Set-Native-Method-Prefix": "true")
+}
+
+
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+}
+
+dependencies {
+	bundle 'org.ow2.asm:asm:7.0'
+	bundle 'org.ow2.asm:asm-commons:7.0'
+	bundle 'org.ow2.asm:asm-util:7.0'
+	bundle 'net.sf.jopt-simple:jopt-simple:5.0.4'
+	bundle 'org.yaml:snakeyaml:1.20-SNAPSHOT'
+}
+
+task dumpLibs(type: Copy) {
+	into "$buildDir/libs/libraries"
+	from configurations.bundle
+}
+
+tasks.build.dependsOn tasks.dumpLibs
