@@ -5,7 +5,7 @@ apply plugin: 'idea'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-version = '1.0.5-Zaxar163'
+version = '1.0.5-GravitLauncher'
 
 repositories {
 	mavenCentral()

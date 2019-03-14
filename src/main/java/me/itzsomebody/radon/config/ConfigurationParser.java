@@ -18,8 +18,6 @@
 package me.itzsomebody.radon.config;
 
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,18 +31,12 @@ import me.itzsomebody.radon.exclusions.Exclusion;
 import me.itzsomebody.radon.exclusions.ExclusionManager;
 import me.itzsomebody.radon.transformers.Transformer;
 import me.itzsomebody.radon.transformers.miscellaneous.Crasher;
-import me.itzsomebody.radon.transformers.miscellaneous.expiration.Expiration;
-import me.itzsomebody.radon.transformers.miscellaneous.expiration.ExpirationSetup;
 import me.itzsomebody.radon.transformers.miscellaneous.watermarker.Watermarker;
 import me.itzsomebody.radon.transformers.miscellaneous.watermarker.WatermarkerSetup;
 import me.itzsomebody.radon.transformers.obfuscators.flow.FlowObfuscation;
 import me.itzsomebody.radon.transformers.obfuscators.invokedynamic.InvokeDynamic;
 import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.HideCode;
-import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.LineNumbers;
-import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.LocalVariables;
 import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.MemberShuffler;
-import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.SourceDebug;
-import me.itzsomebody.radon.transformers.obfuscators.miscellaneous.SourceName;
 import me.itzsomebody.radon.transformers.obfuscators.numbers.NumberObfuscation;
 import me.itzsomebody.radon.transformers.obfuscators.strings.StringEncryption;
 import me.itzsomebody.radon.transformers.obfuscators.strings.StringEncryptionSetup;
@@ -97,13 +89,8 @@ public class ConfigurationParser {
         }
         transformers.add(getFlowObfuscationTransformer());
         transformers.add(getShufflerTransformer());
-        transformers.add(getLocalVariablesTransformer());
-        transformers.add(getLineNumbersTransformer());
-        transformers.add(getSourceNameTransformer());
-        transformers.add(getSourceDebugTransformer());
         transformers.add(getCrasherTransformer());
         transformers.add(getHideCodeTransformer());
-        transformers.add(getExpirationTransformer());
         transformers.add(getWatermarkerTransformer());
 
         return transformers;
@@ -220,87 +207,6 @@ public class ConfigurationParser {
         return ((boolean) o) ? new MemberShuffler() : null;
     }
 
-    private LocalVariables getLocalVariablesTransformer() {
-        Object o = map.get(ConfigurationSetting.LOCAL_VARIABLES.getValue());
-        if (o == null)
-            return null;
-        if (!(o instanceof Map))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.LOCAL_VARIABLES.getValue(), Map.class,
-                    o.getClass());
-
-        try {
-            Map<String, Boolean> settings = (Map) o;
-            if (!settings.get("Enabled")) {
-                return null;
-            }
-
-            return new LocalVariables(settings.getOrDefault("Remove", false));
-        } catch (ClassCastException e) {
-            throw new IllegalConfigurationValueException("Error while parsing local variable obfuscation setup: "
-                    + e.getMessage());
-        }
-    }
-
-    private LineNumbers getLineNumbersTransformer() {
-        Object o = map.get(ConfigurationSetting.LINE_NUMBERS.getValue());
-        if (o == null)
-            return null;
-        if (!(o instanceof Map))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.LINE_NUMBERS.getValue(), Map.class,
-                    o.getClass());
-
-        try {
-            Map<String, Boolean> settings = (Map) o;
-            if (!settings.get("Enabled"))
-                return null;
-
-            return new LineNumbers(settings.getOrDefault("Remove", false));
-        } catch (ClassCastException e) {
-            throw new IllegalConfigurationValueException("Error while parsing line number obfuscation setup: "
-                    + e.getMessage());
-        }
-    }
-
-    private SourceName getSourceNameTransformer() {
-        Object o = map.get(ConfigurationSetting.SOURCE_NAME.getValue());
-        if (o == null)
-            return null;
-        if (!(o instanceof Map))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.SOURCE_NAME.getValue(), Map.class,
-                    o.getClass());
-
-        try {
-            Map<String, Boolean> settings = (Map) o;
-            if (!settings.get("Enabled"))
-                return null;
-
-            return new SourceName(settings.getOrDefault("Remove", false));
-        } catch (ClassCastException e) {
-            throw new IllegalConfigurationValueException("Error while parsing source name obfuscation setup: "
-                    + e.getMessage());
-        }
-    }
-
-    private SourceDebug getSourceDebugTransformer() {
-        Object o = map.get(ConfigurationSetting.SOURCE_DEBUG.getValue());
-        if (o == null)
-            return null;
-        if (!(o instanceof Map))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.SOURCE_DEBUG.getValue(), Map.class,
-                    o.getClass());
-
-        try {
-            Map<String, Boolean> settings = (Map) o;
-            if (!settings.get("Enabled"))
-                return null;
-
-            return new SourceDebug(settings.getOrDefault("Remove", false));
-        } catch (ClassCastException e) {
-            throw new IllegalConfigurationValueException("Error while parsing source debug obfuscation setup: "
-                    + e.getMessage());
-        }
-    }
-
     private Crasher getCrasherTransformer() {
         Object o = map.get(ConfigurationSetting.CRASHER.getValue());
         if (o == null)
@@ -321,29 +227,6 @@ public class ConfigurationParser {
                     o.getClass());
 
         return ((Boolean) o) ? new HideCode() : null;
-    }
-
-    private Expiration getExpirationTransformer() {
-        Object o = map.get(ConfigurationSetting.EXPIRATION.getValue());
-        if (o == null)
-            return null;
-        if (!(o instanceof Map))
-            throw new IllegalConfigurationValueException(ConfigurationSetting.EXPIRATION.getValue(), Map.class,
-                    o.getClass());
-
-        try {
-            Map<String, Object> settings = (Map) o;
-            if (!(boolean) settings.get("Enabled"))
-                return null;
-
-            boolean injectJOptionPane = (Boolean) settings.get("InjectJOptionPane");
-            String expirationMessage = (String) settings.get("Message");
-            long expirationDate = new SimpleDateFormat("MM/dd/yyyy").parse((String) settings.get("Expires")).getTime();
-
-            return new Expiration(new ExpirationSetup(expirationMessage, expirationDate, injectJOptionPane));
-        } catch (ClassCastException | ParseException e) {
-            throw new IllegalConfigurationValueException("Error while parsing expiration setup: " + e.getMessage());
-        }
     }
 
     private Watermarker getWatermarkerTransformer() {
