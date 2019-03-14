@@ -27,17 +27,12 @@ public enum ExclusionType {
     STRING_ENCRYPTION("StringEncryption"),
     INVOKEDYNAMIC("InvokeDynamic"),
     FLOW_OBFUSCATION("FlowObfuscation"),
-    LINE_NUMBERS("LineNumbers"),
-    LOCAL_VARIABLES("LocalVariables"),
     NUMBER_OBFUSCATION("NumberObfuscation"),
     HIDE_CODE("HideCode"),
     CRASHER("Crasher"),
-    EXPIRATION("Expiration"),
     OPTIMIZER("Optimizer"),
     SHRINKER("Shrinker"),
     SHUFFLER("Shuffler"),
-    SOURCE_NAME("SourceName"),
-    SOURCE_DEBUG("SourceDebug"),
     STRING_POOL("StringPool");
 
     private final String value;
