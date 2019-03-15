@@ -252,9 +252,7 @@ public class Radon {
             if (classWrapper.classNode.interfaces != null && !classWrapper.classNode.interfaces.isEmpty()) {
                 for (String s : classWrapper.classNode.interfaces) {
                     tree.parentClasses.add(s);
-                    ClassWrapper interfaceClass = classPath.get(s);
-                    if (interfaceClass == null)
-                        throw new RadonException(s + " is missing in the classpath.");
+                    ClassWrapper interfaceClass = returnClazz(classWrapper.classNode.superName);
                     buildHierarchy(interfaceClass, classWrapper);
                 }
             }
