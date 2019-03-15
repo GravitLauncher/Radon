@@ -246,9 +246,7 @@ public class Radon {
             ClassTree tree = new ClassTree(classWrapper);
             if (classWrapper.classNode.superName != null) {
                 tree.parentClasses.add(classWrapper.classNode.superName);
-                ClassWrapper superClass = classPath.get(classWrapper.classNode.superName);
-                if (superClass == null)
-                    throw new RadonException(classWrapper.classNode.superName + " is missing in the classpath.");
+                ClassWrapper superClass = returnClazz(classWrapper.classNode.superName);
                 buildHierarchy(superClass, classWrapper);
             }
             if (classWrapper.classNode.interfaces != null && !classWrapper.classNode.interfaces.isEmpty()) {
@@ -271,6 +269,34 @@ public class Radon {
         classes.values().forEach(classWrapper -> buildHierarchy(classWrapper, null));
     }
 
+    private ClassWrapper returnClazz(String ref) {
+        ClassWrapper clazz = classPath.get(ref);
+        if (clazz == null) {
+        	if (!Boolean.getBoolean("radon.useJVMCP")) throw new MissingClassException(ref + " does not exist in classpath!");
+        	InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
+        	if (in == null)
+        		throw new MissingClassException(ref + " does not exist in classpath!");
+            try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192];
+                for (int length = in.read(buffer); length >= 0; length = in.read(buffer)) {
+                    output.write(buffer, 0, length);
+                }
+                in.close();
+                ClassReader r = new ClassReader(output.toByteArray());
+                ClassNode toRet = new ClassNode();
+                r.accept(toRet, 0);
+                clazz = new ClassWrapper(toRet, true);
+            } catch (IOException e) {
+                try {
+					in.close();
+				} catch (IOException e1) {
+				}
+        		throw new MissingClassException(ref + " does not exist in classpath!");
+			}
+        }
+        return clazz;
+    }
+    
     class CustomClassWriter extends ClassWriter {
         private CustomClassWriter(int flags) {
             super(flags);
@@ -289,12 +315,12 @@ public class Radon {
             if (!"java/lang/Object".equals(second))
                 return second;
 
-            return getCommonSuperClass(returnClazz(type1).superName, returnClazz(type2).superName);
+            return getCommonSuperClass(returnClazz(type1).classNode.superName, returnClazz(type2).classNode.superName);
         }
 
         private String deriveCommonSuperName(String type1, String type2) {
-            ClassNode first = returnClazz(type1);
-            ClassNode second = returnClazz(type2);
+            ClassNode first = returnClazz(type1).classNode;
+            ClassNode second = returnClazz(type2).classNode;
             if (isAssignableFrom(type1, type2))
                 return type1;
             else if (isAssignableFrom(type2, type1))
@@ -304,38 +330,10 @@ public class Radon {
             else {
                 do {
                     type1 = first.superName;
-                    first = returnClazz(type1);
+                    first = returnClazz(type1).classNode;
                 } while (!isAssignableFrom(type1, type2));
                 return type1;
             }
-        }
-
-        private ClassNode returnClazz(String ref) {
-            ClassWrapper clazz = classPath.get(ref);
-            if (clazz == null) {
-            	if (!Boolean.getBoolean("radon.useJVMCP")) throw new MissingClassException(ref + " does not exist in classpath!");
-            	InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
-            	if (in == null)
-            		throw new MissingClassException(ref + " does not exist in classpath!");
-                try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                    byte[] buffer = new byte[8192];
-                    for (int length = in.read(buffer); length >= 0; length = in.read(buffer)) {
-                        output.write(buffer, 0, length);
-                    }
-                    in.close();
-                    ClassReader r = new ClassReader(output.toByteArray());
-                    ClassNode toRet = new ClassNode();
-                    r.accept(toRet, 0);
-                    return toRet;
-                } catch (IOException e) {
-                    try {
-						in.close();
-					} catch (IOException e1) {
-					}
-            		throw new MissingClassException(ref + " does not exist in classpath!");
-				}
-            }
-            return clazz.classNode;
         }
 
         private boolean isAssignableFrom(String type1, String type2) {
