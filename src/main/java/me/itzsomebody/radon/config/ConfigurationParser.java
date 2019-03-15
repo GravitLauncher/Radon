@@ -82,7 +82,8 @@ public class ConfigurationParser {
         ArrayList<Transformer> transformers = new ArrayList<>();
         transformers.add(getOptimizerTransformer());
         transformers.add(getNumberObfuscationTransformer());
-        transformers.add(getInvokeDynamicTransformer());
+        Transformer trans = getInvokeDynamicTransformer();
+        if (trans != null) transformers.add(trans);
         List<StringEncryption> stringEncrypters = getStringEncryptionTransformers();
         if (stringEncrypters != null) {
             transformers.addAll(stringEncrypters);
@@ -143,6 +144,7 @@ public class ConfigurationParser {
             throw new IllegalConfigurationValueException(ConfigurationSetting.INVOKEDYNAMIC.getValue(), String.class,
                     o.getClass());
         String s = (String) o;
+        if (s.equalsIgnoreCase("none")) return null;
         if (!"Light".equals(s) && !"Normal".equals(s) && !"Heavy".equals(s))
             throw new IllegalConfigurationValueException("Expected Light, Normal or Heavy as mode for invokedynamic " +
                     "obfuscation. Got " + s + " instead.");
