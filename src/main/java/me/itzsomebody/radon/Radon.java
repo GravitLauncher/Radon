@@ -234,7 +234,7 @@ public class Radon {
 
     public ClassTree getTree(String ref) {
         if (!hierarchy.containsKey(ref)) {
-            ClassWrapper wrapper = classPath.get(ref);
+            ClassWrapper wrapper = returnClazz(ref);
             buildHierarchy(wrapper, null);
         }
 
@@ -267,7 +267,7 @@ public class Radon {
         classes.values().forEach(classWrapper -> buildHierarchy(classWrapper, null));
     }
 
-    private ClassWrapper returnClazz(String ref) {
+    public ClassWrapper returnClazz(String ref) {
         ClassWrapper clazz = classPath.get(ref);
         if (clazz == null) {
         	if (!Boolean.getBoolean("radon.useJVMCP")) throw new MissingClassException(ref + " does not exist in classpath!");

@@ -109,7 +109,7 @@ public class HeavyInvokeDynamic extends InvokeDynamic {
                     } else if (insn instanceof FieldInsnNode && !"<init>".equals(methodNode.name)) {
                         FieldInsnNode fieldInsnNode = (FieldInsnNode) insn;
 
-                        ClassWrapper cw = getClassPath().get(fieldInsnNode.owner);
+                        ClassWrapper cw = radon.returnClazz(fieldInsnNode.owner);
                         if (cw == null)
                             throw new MissingClassException(fieldInsnNode.owner + " does not exist in classpath");
 
