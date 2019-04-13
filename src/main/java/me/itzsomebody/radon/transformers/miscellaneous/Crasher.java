@@ -24,7 +24,6 @@ import org.objectweb.asm.tree.ClassNode;
 
 /**
  * Sets the class signature to a random string. A known trick to work on JD, CFR, Procyon and Javap.
- * TODO: rewrite this.
  *
  * @author ItzSomebody
  */
