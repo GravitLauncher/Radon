@@ -136,7 +136,7 @@ public class Radon {
                 }
             });
 
-            zos.setComment(Main.PROPAGANDA_GARBAGE);
+            //zos.setComment(Main.PROPAGANDA_GARBAGE);
             zos.close();
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -242,18 +242,20 @@ public class Radon {
     }
 
     private void buildHierarchy(ClassWrapper classWrapper, ClassWrapper sub) {
-        if (hierarchy.get(classWrapper.classNode.name) == null) {
+    	if (hierarchy.get(classWrapper.classNode.name) == null) {
             ClassTree tree = new ClassTree(classWrapper);
             if (classWrapper.classNode.superName != null) {
                 tree.parentClasses.add(classWrapper.classNode.superName);
-                ClassWrapper superClass = returnClazz(classWrapper.classNode.superName);
+                ClassWrapper superClass = returnClazzS(classWrapper.classNode.superName);
+                if (superClass == null) superClass = returnClazz("java/lang/Object");
                 buildHierarchy(superClass, classWrapper);
             }
             if (classWrapper.classNode.interfaces != null && !classWrapper.classNode.interfaces.isEmpty()) {
                 for (String s : classWrapper.classNode.interfaces) {
                     tree.parentClasses.add(s);
-                    ClassWrapper interfaceClass = returnClazz(classWrapper.classNode.superName);
-                    buildHierarchy(interfaceClass, classWrapper);
+                    ClassWrapper interfaceClass = returnClazzS(classWrapper.classNode.superName);
+                    if (interfaceClass != null)
+                    	buildHierarchy(interfaceClass, classWrapper);
                 }
             }
             hierarchy.put(classWrapper.classNode.name, tree);
@@ -261,6 +263,33 @@ public class Radon {
         if (sub != null) {
             hierarchy.get(classWrapper.classNode.name).subClasses.add(sub.classNode.name);
         }
+    }
+
+    public ClassWrapper returnClazzS(String ref) {
+        ClassWrapper clazz = classPath.get(ref);
+        if (clazz == null) {
+        	if (!Boolean.getBoolean("radon.useJVMCP")) throw new MissingClassException(ref + " does not exist in classpath!");
+        	InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
+        	if (in == null)
+        		return clazz;
+            try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192];
+                for (int length = in.read(buffer); length >= 0; length = in.read(buffer)) {
+                    output.write(buffer, 0, length);
+                }
+                in.close();
+                ClassReader r = new ClassReader(output.toByteArray());
+                ClassNode toRet = new ClassNode();
+                r.accept(toRet, 0);
+                clazz = new ClassWrapper(toRet, true);
+            } catch (IOException e) {
+                try {
+					in.close();
+				} catch (IOException e1) {
+				}
+			}
+        }
+        return clazz;
     }
 
     private void buildInheritance() {
