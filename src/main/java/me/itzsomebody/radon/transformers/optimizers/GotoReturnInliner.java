@@ -17,13 +17,14 @@
 
 package me.itzsomebody.radon.transformers.optimizers;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import me.itzsomebody.radon.utils.BytecodeUtils;
 import me.itzsomebody.radon.Logger;
+import me.itzsomebody.radon.utils.BytecodeUtils;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Inlines goto-return sequences by setting the goto to a return opcode.

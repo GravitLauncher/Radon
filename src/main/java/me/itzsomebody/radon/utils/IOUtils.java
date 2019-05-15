@@ -17,11 +17,12 @@
 
 package me.itzsomebody.radon.utils;
 
+import me.itzsomebody.radon.exceptions.RadonException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import me.itzsomebody.radon.exceptions.RadonException;
 
 /**
  * IO utilities.
@@ -40,7 +41,7 @@ public class IOUtils {
 
         while (true) {
             i++;
-            String newName = existing.getAbsolutePath() + ".BACKUP-" + String.valueOf(i);
+            String newName = existing.getAbsolutePath() + ".BACKUP-" + i;
             File backUpName = new File(newName);
             if (!backUpName.exists()) {
                 existing.renameTo(backUpName);

@@ -17,12 +17,6 @@
 
 package me.itzsomebody.radon.config;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import me.itzsomebody.radon.Dictionaries;
 import me.itzsomebody.radon.SessionInfo;
 import me.itzsomebody.radon.exceptions.IllegalConfigurationValueException;
@@ -45,6 +39,9 @@ import me.itzsomebody.radon.transformers.optimizers.Optimizer;
 import me.itzsomebody.radon.transformers.optimizers.OptimizerDelegator;
 import me.itzsomebody.radon.transformers.optimizers.OptimizerSetup;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * A big mess which somehow parses the configuration files.

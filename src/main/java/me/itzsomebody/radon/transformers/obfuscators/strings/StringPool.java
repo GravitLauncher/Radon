@@ -17,19 +17,13 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.strings;
 
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
+import me.itzsomebody.radon.Logger;
 import me.itzsomebody.radon.exclusions.ExclusionType;
 import me.itzsomebody.radon.utils.BytecodeUtils;
-import me.itzsomebody.radon.Logger;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
+
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Transformer that takes all the strings in a class and pools them into a field. When the string is needed, the string

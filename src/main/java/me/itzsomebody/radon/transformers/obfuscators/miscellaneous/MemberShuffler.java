@@ -17,11 +17,12 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.miscellaneous;
 
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
+import me.itzsomebody.radon.Logger;
 import me.itzsomebody.radon.exclusions.ExclusionType;
 import me.itzsomebody.radon.transformers.Transformer;
-import me.itzsomebody.radon.Logger;
+
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Randomizes the order of methods and fields in a class.

@@ -17,14 +17,15 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.numbers;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import me.itzsomebody.radon.utils.BytecodeUtils;
 import me.itzsomebody.radon.Logger;
+import me.itzsomebody.radon.utils.BytecodeUtils;
 import me.itzsomebody.radon.utils.RandomUtils;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Obfuscates integer and long constants using arithmetic.

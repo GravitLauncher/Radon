@@ -17,8 +17,6 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.flow;
 
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import me.itzsomebody.radon.asm.StackEmulator;
 import me.itzsomebody.radon.exceptions.RadonException;
 import me.itzsomebody.radon.exceptions.StackEmulationException;
@@ -26,17 +24,10 @@ import me.itzsomebody.radon.utils.BytecodeUtils;
 import me.itzsomebody.radon.utils.RandomUtils;
 import me.itzsomebody.radon.utils.StringUtils;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LineNumberNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
+
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Same as{@link LightFlowObfuscation}, but also inserts fake jumps where the stack is empty.

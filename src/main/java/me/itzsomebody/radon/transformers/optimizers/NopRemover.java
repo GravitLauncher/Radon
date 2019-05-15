@@ -17,10 +17,11 @@
 
 package me.itzsomebody.radon.transformers.optimizers;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 import me.itzsomebody.radon.Logger;
 import org.objectweb.asm.tree.MethodNode;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 /**
  * Removes all NOPs found. Do note that ASM's MethodWriter will replace unreachable instructions with NOPs so you might

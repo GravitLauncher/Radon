@@ -17,9 +17,10 @@
 
 package me.itzsomebody.radon.asm;
 
+import org.objectweb.asm.tree.ClassNode;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.objectweb.asm.tree.ClassNode;
 
 /**
  * Wrapper for ClassNodes.

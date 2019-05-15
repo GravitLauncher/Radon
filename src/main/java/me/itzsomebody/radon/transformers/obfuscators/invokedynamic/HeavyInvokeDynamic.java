@@ -17,24 +17,19 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.invokedynamic;
 
-import java.lang.reflect.Modifier;
-import java.util.concurrent.atomic.AtomicInteger;
+import me.itzsomebody.radon.Logger;
 import me.itzsomebody.radon.asm.ClassWrapper;
 import me.itzsomebody.radon.asm.FieldWrapper;
 import me.itzsomebody.radon.exceptions.MissingClassException;
-import me.itzsomebody.radon.Logger;
 import me.itzsomebody.radon.utils.StringUtils;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InvokeDynamicInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.*;
+
+import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Replaces getstatic, getfield, putstatic, putfield, invokestatic, invokevirtual, invokeinterface and invokespecial
