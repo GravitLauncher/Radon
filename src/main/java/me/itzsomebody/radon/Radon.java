@@ -140,22 +140,22 @@ public class Radon {
                 Logger.stdOut(String.format("Loading library \"%s\".", file.getAbsolutePath()));
                 try {
                     try (ZipFile zipFile = new ZipFile(file)) {
-                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                    while (entries.hasMoreElements()) {
-                        ZipEntry entry = entries.nextElement();
-                        if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-                            try {
-                                ClassReader cr = new ClassReader(zipFile.getInputStream(entry));
-                                ClassNode classNode = new ClassNode();
-                                cr.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
-                                ClassWrapper classWrapper = new ClassWrapper(classNode, true);
+                        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                        while (entries.hasMoreElements()) {
+                            ZipEntry entry = entries.nextElement();
+                            if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+                                try {
+                                    ClassReader cr = new ClassReader(zipFile.getInputStream(entry));
+                                    ClassNode classNode = new ClassNode();
+                                    cr.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
+                                    ClassWrapper classWrapper = new ClassWrapper(classNode, true);
 
-                                this.classPath.put(classWrapper.originalName, classWrapper);
-                            } catch (Throwable t) {
-                                // Don't care.
+                                    this.classPath.put(classWrapper.originalName, classWrapper);
+                                } catch (Throwable t) {
+                                    // Don't care.
+                                }
                             }
                         }
-                    }
                     }
                 } catch (ZipException e) {
                     Logger.stdErr(String.format("Library \"%s\" could not be opened as a zip file.", file.getAbsolutePath()));
@@ -176,36 +176,36 @@ public class Radon {
             Logger.stdOut(String.format("Loading input \"%s\".", input.getAbsolutePath()));
             try {
                 try (ZipFile zipFile = new ZipFile(input)) {
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    if (!entry.isDirectory()) {
-                        if (entry.getName().endsWith(".class")) {
-                            try {
-                                ClassReader cr = new ClassReader(zipFile.getInputStream(entry));
-                                ClassNode classNode = new ClassNode();
-                                cr.accept(classNode, ClassReader.SKIP_FRAMES);
-                                if (classNode.version <= Opcodes.V1_5) {
-                                    for (int i = 0; i < classNode.methods.size(); i++) {
-                                        MethodNode methodNode = classNode.methods.get(i);
-                                        JSRInlinerAdapter adapter = new JSRInlinerAdapter(methodNode, methodNode.access, methodNode.name, methodNode.desc, methodNode.signature, methodNode.exceptions.toArray(new String[0]));
-                                        methodNode.accept(adapter);
-                                        classNode.methods.set(i, adapter);
+                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        if (!entry.isDirectory()) {
+                            if (entry.getName().endsWith(".class")) {
+                                try {
+                                    ClassReader cr = new ClassReader(zipFile.getInputStream(entry));
+                                    ClassNode classNode = new ClassNode();
+                                    cr.accept(classNode, ClassReader.SKIP_FRAMES);
+                                    if (classNode.version <= Opcodes.V1_5) {
+                                        for (int i = 0; i < classNode.methods.size(); i++) {
+                                            MethodNode methodNode = classNode.methods.get(i);
+                                            JSRInlinerAdapter adapter = new JSRInlinerAdapter(methodNode, methodNode.access, methodNode.name, methodNode.desc, methodNode.signature, methodNode.exceptions.toArray(new String[0]));
+                                            methodNode.accept(adapter);
+                                            classNode.methods.set(i, adapter);
+                                        }
                                     }
-                                }
-                                ClassWrapper classWrapper = new ClassWrapper(classNode, false);
+                                    ClassWrapper classWrapper = new ClassWrapper(classNode, false);
 
-                                this.classPath.put(classWrapper.originalName, classWrapper);
-                                this.classes.put(classWrapper.originalName, classWrapper);
-                            } catch (Throwable t) {
-                                Logger.stdWarn(String.format("Could not load %s as a class.", entry.getName()));
+                                    this.classPath.put(classWrapper.originalName, classWrapper);
+                                    this.classes.put(classWrapper.originalName, classWrapper);
+                                } catch (Throwable t) {
+                                    Logger.stdWarn(String.format("Could not load %s as a class.", entry.getName()));
+                                    this.resources.put(entry.getName(), IOUtils.toByteArray(zipFile.getInputStream(entry)));
+                                }
+                            } else {
                                 this.resources.put(entry.getName(), IOUtils.toByteArray(zipFile.getInputStream(entry)));
                             }
-                        } else {
-                            this.resources.put(entry.getName(), IOUtils.toByteArray(zipFile.getInputStream(entry)));
                         }
                     }
-                }
                 }
             } catch (ZipException e) {
                 Logger.stdErr(String.format("Input file \"%s\" could not be opened as a zip file.", input.getAbsolutePath()));
@@ -232,7 +232,7 @@ public class Radon {
     }
 
     private void buildHierarchy(ClassWrapper classWrapper, ClassWrapper sub) {
-    	if (hierarchy.get(classWrapper.classNode.name) == null) {
+        if (hierarchy.get(classWrapper.classNode.name) == null) {
             ClassTree tree = new ClassTree(classWrapper);
             if (classWrapper.classNode.superName != null) {
                 tree.parentClasses.add(classWrapper.classNode.superName);
@@ -245,7 +245,7 @@ public class Radon {
                     tree.parentClasses.add(s);
                     ClassWrapper interfaceClass = returnClazzS(classWrapper.classNode.superName);
                     if (interfaceClass != null)
-                    	buildHierarchy(interfaceClass, classWrapper);
+                        buildHierarchy(interfaceClass, classWrapper);
                 }
             }
             hierarchy.put(classWrapper.classNode.name, tree);
@@ -258,10 +258,11 @@ public class Radon {
     public ClassWrapper returnClazzS(String ref) {
         ClassWrapper clazz = classPath.get(ref);
         if (clazz == null) {
-        	if (!Boolean.getBoolean("radon.useJVMCP")) throw new MissingClassException(ref + " does not exist in classpath!");
-        	InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
-        	if (in == null)
-        		return clazz;
+            if (!Boolean.getBoolean("radon.useJVMCP"))
+                throw new MissingClassException(ref + " does not exist in classpath!");
+            InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
+            if (in == null)
+                return clazz;
             try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
                 byte[] buffer = new byte[8192];
                 for (int length = in.read(buffer); length >= 0; length = in.read(buffer)) {
@@ -274,10 +275,10 @@ public class Radon {
                 clazz = new ClassWrapper(toRet, true);
             } catch (IOException e) {
                 try {
-					in.close();
-				} catch (IOException e1) {
-				}
-			}
+                    in.close();
+                } catch (IOException e1) {
+                }
+            }
         }
         return clazz;
     }
@@ -289,10 +290,11 @@ public class Radon {
     public ClassWrapper returnClazz(String ref) {
         ClassWrapper clazz = classPath.get(ref);
         if (clazz == null) {
-        	if (!Boolean.getBoolean("radon.useJVMCP")) throw new MissingClassException(ref + " does not exist in classpath!");
-        	InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
-        	if (in == null)
-        		throw new MissingClassException(ref + " does not exist in classpath!");
+            if (!Boolean.getBoolean("radon.useJVMCP"))
+                throw new MissingClassException(ref + " does not exist in classpath!");
+            InputStream in = Radon.class.getResourceAsStream('/' + ref + ".class");
+            if (in == null)
+                throw new MissingClassException(ref + " does not exist in classpath!");
             try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
                 byte[] buffer = new byte[8192];
                 for (int length = in.read(buffer); length >= 0; length = in.read(buffer)) {
@@ -305,15 +307,15 @@ public class Radon {
                 clazz = new ClassWrapper(toRet, true);
             } catch (IOException e) {
                 try {
-					in.close();
-				} catch (IOException e1) {
-				}
-        		throw new MissingClassException(ref + " does not exist in classpath!");
-			}
+                    in.close();
+                } catch (IOException e1) {
+                }
+                throw new MissingClassException(ref + " does not exist in classpath!");
+            }
         }
         return clazz;
     }
-    
+
     class CustomClassWriter extends ClassWriter {
         private CustomClassWriter(int flags) {
             super(flags);

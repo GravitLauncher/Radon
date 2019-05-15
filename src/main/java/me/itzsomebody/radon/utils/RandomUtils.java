@@ -25,7 +25,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author ItzSomebody
  * @author freeasbird
  */
-public class RandomUtils {public static int getRandomInt() {
+public class RandomUtils {
+    public static int getRandomInt() {
         return ThreadLocalRandom.current().nextInt();
     }
 

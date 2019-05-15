@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Main class of obfuscator.
+ *
  * @author ItzSomebody
  */
 public class Main {
@@ -52,16 +53,16 @@ public class Main {
      * @param args arguments from command line.
      */
     public static void main(String[] args) {
-            File file = new File("config.yml");
-            ConfigurationParser config;
-            try {
-                config = new ConfigurationParser(new FileInputStream(file));
-            } catch (FileNotFoundException exc) {
-                Logger.stdErr(String.format("Configuration \"%s\" file not found", file.getName()));
-                return;
-            }
+        File file = new File("config.yml");
+        ConfigurationParser config;
+        try {
+            config = new ConfigurationParser(new FileInputStream(file));
+        } catch (FileNotFoundException exc) {
+            Logger.stdErr(String.format("Configuration \"%s\" file not found", file.getName()));
+            return;
+        }
 
-            Radon radon = new Radon(config.createSessionFromConfig());
-            radon.run();
+        Radon radon = new Radon(config.createSessionFromConfig());
+        radon.run();
     }
 }

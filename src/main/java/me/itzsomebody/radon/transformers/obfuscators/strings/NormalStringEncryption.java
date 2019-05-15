@@ -48,38 +48,38 @@ public class NormalStringEncryption extends StringEncryption {
                 !excluded(classWrapper)).forEach(classWrapper ->
                 classWrapper.methods.parallelStream().filter(methodWrapper -> !excluded(methodWrapper)
                         && hasInstructions(methodWrapper.methodNode)).forEach(methodWrapper -> {
-            MethodNode methodNode = methodWrapper.methodNode;
-            int leeway = getSizeLeeway(methodNode);
+                    MethodNode methodNode = methodWrapper.methodNode;
+                    int leeway = getSizeLeeway(methodNode);
 
-            for (AbstractInsnNode insn : methodNode.instructions.toArray()) {
-                if (leeway < 10000)
-                    break;
+                    for (AbstractInsnNode insn : methodNode.instructions.toArray()) {
+                        if (leeway < 10000)
+                            break;
 
-                if (insn instanceof LdcInsnNode) {
-                    LdcInsnNode ldc = (LdcInsnNode) insn;
-                    if (ldc.cst instanceof String) {
-                        String cst = (String) ldc.cst;
+                        if (insn instanceof LdcInsnNode) {
+                            LdcInsnNode ldc = (LdcInsnNode) insn;
+                            if (ldc.cst instanceof String) {
+                                String cst = (String) ldc.cst;
 
-                        if (!excludedString(cst)) {
-                            int extraKey = RandomUtils.getRandomInt();
-                            int callerClassHC = classWrapper.classNode.name.replace("/", ".").hashCode();
-                            int callerMethodHC = methodNode.name.hashCode();
-                            int decryptorClassHC = memberNames.className.replace("/", ".").hashCode();
+                                if (!excludedString(cst)) {
+                                    int extraKey = RandomUtils.getRandomInt();
+                                    int callerClassHC = classWrapper.classNode.name.replace("/", ".").hashCode();
+                                    int callerMethodHC = methodNode.name.hashCode();
+                                    int decryptorClassHC = memberNames.className.replace("/", ".").hashCode();
 
-                            methodNode.instructions.insert(insn, new MethodInsnNode(INVOKESTATIC, memberNames.className,
-                                    memberNames.decryptMethodName, "(Ljava/lang/Object;I)Ljava/lang/String;", false));
-                            methodNode.instructions.insert(insn, BytecodeUtils.getNumberInsn(extraKey));
+                                    methodNode.instructions.insert(insn, new MethodInsnNode(INVOKESTATIC, memberNames.className,
+                                            memberNames.decryptMethodName, "(Ljava/lang/Object;I)Ljava/lang/String;", false));
+                                    methodNode.instructions.insert(insn, BytecodeUtils.getNumberInsn(extraKey));
 
-                            String encryptedString = encrypt(cst, decryptorClassHC, callerClassHC, callerMethodHC, extraKey);
-                            BytecodeUtils.replaceInsn(methodNode.instructions, insn, getSafeStringInsnList(encryptedString));
+                                    String encryptedString = encrypt(cst, decryptorClassHC, callerClassHC, callerMethodHC, extraKey);
+                                    BytecodeUtils.replaceInsn(methodNode.instructions, insn, getSafeStringInsnList(encryptedString));
 
-                            leeway -= 7;
-                            counter.incrementAndGet();
+                                    leeway -= 7;
+                                    counter.incrementAndGet();
+                                }
+                            }
                         }
                     }
-                }
-            }
-        }));
+                }));
         // Add decrypt method
         ClassNode decryptor = createDecryptor(memberNames);
         getClasses().put(decryptor.name, new ClassWrapper(decryptor, false));

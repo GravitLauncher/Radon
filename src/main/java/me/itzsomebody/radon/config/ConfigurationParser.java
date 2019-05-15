@@ -150,14 +150,14 @@ public class ConfigurationParser {
         return InvokeDynamic.getTransformerFromString(s);
     }
 
-	private List<StringEncryption> getStringEncryptionTransformers() {
+    private List<StringEncryption> getStringEncryptionTransformers() {
         Object o = map.get(ConfigurationSetting.STRING_ENCRYPTION.getValue());
         if (o == null)
             return null;
         if (!(o instanceof Map))
             throw new IllegalConfigurationValueException(ConfigurationSetting.STRING_ENCRYPTION.getValue(), Map.class,
                     o.getClass());
-		Map<String, Object> settings = (Map) o;
+        Map<String, Object> settings = (Map) o;
         if (!(boolean) settings.get("Enabled"))
             return null;
 
