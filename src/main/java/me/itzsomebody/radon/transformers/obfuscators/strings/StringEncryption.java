@@ -17,13 +17,18 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.strings;
 
+import java.util.List;
+
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.TypeInsnNode;
+
 import me.itzsomebody.radon.exceptions.IllegalConfigurationValueException;
 import me.itzsomebody.radon.exclusions.ExclusionType;
 import me.itzsomebody.radon.transformers.Transformer;
 import me.itzsomebody.radon.utils.StringUtils;
-import org.objectweb.asm.tree.*;
-
-import java.util.List;
 
 /**
  * Abstract class for string encryption transformers.

@@ -17,14 +17,15 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.miscellaneous;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.objectweb.asm.tree.ClassNode;
+
 import me.itzsomebody.radon.Logger;
 import me.itzsomebody.radon.exclusions.ExclusionType;
 import me.itzsomebody.radon.transformers.Transformer;
 import me.itzsomebody.radon.utils.AccessUtils;
 import me.itzsomebody.radon.utils.BytecodeUtils;
-import org.objectweb.asm.tree.ClassNode;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Adds a synthetic modifier and bridge modifier if possible to attempt to hide code against some lower-quality

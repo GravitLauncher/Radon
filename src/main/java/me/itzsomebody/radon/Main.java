@@ -17,11 +17,11 @@
 
 package me.itzsomebody.radon;
 
-import me.itzsomebody.radon.config.ConfigurationParser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+
+import me.itzsomebody.radon.config.ConfigurationParser;
 
 /**
  * Main class of obfuscator.

@@ -17,6 +17,14 @@
 
 package me.itzsomebody.radon.transformers;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.commons.CodeSizeEvaluator;
+import org.objectweb.asm.tree.MethodNode;
+
 import me.itzsomebody.radon.Radon;
 import me.itzsomebody.radon.asm.ClassWrapper;
 import me.itzsomebody.radon.asm.FieldWrapper;
@@ -24,13 +32,6 @@ import me.itzsomebody.radon.asm.MethodWrapper;
 import me.itzsomebody.radon.exceptions.RadonException;
 import me.itzsomebody.radon.exclusions.ExclusionType;
 import me.itzsomebody.radon.utils.StringUtils;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.commons.CodeSizeEvaluator;
-import org.objectweb.asm.tree.MethodNode;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * Abstract transformer for all the transformers. \o/

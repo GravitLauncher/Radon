@@ -17,16 +17,22 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.invokedynamic;
 
-import me.itzsomebody.radon.Logger;
-import me.itzsomebody.radon.asm.ClassWrapper;
-import me.itzsomebody.radon.utils.StringUtils;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import me.itzsomebody.radon.Logger;
+import me.itzsomebody.radon.asm.ClassWrapper;
+import me.itzsomebody.radon.utils.StringUtils;
 
 /**
  * Replaces invokestatic, invokevirtual and invokeinterface with invokedynamic instructions.

@@ -17,11 +17,12 @@
 
 package me.itzsomebody.radon.transformers.miscellaneous;
 
-import me.itzsomebody.radon.exclusions.ExclusionType;
-import me.itzsomebody.radon.transformers.Transformer;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.objectweb.asm.tree.ClassNode;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import me.itzsomebody.radon.exclusions.ExclusionType;
+import me.itzsomebody.radon.transformers.Transformer;
 
 /**
  * Sets the class signature to a random string. A known trick to work on JD, CFR, Procyon and Javap.

@@ -17,19 +17,20 @@
 
 package me.itzsomebody.radon.transformers.miscellaneous.watermarker;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
 import me.itzsomebody.radon.Logger;
 import me.itzsomebody.radon.asm.ClassWrapper;
 import me.itzsomebody.radon.exclusions.ExclusionType;
 import me.itzsomebody.radon.transformers.Transformer;
 import me.itzsomebody.radon.utils.BytecodeUtils;
 import me.itzsomebody.radon.utils.RandomUtils;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
 
 /**
  * Embeds a watermark into random classes.

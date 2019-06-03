@@ -17,13 +17,14 @@
 
 package me.itzsomebody.radon.transformers.optimizers;
 
-import me.itzsomebody.radon.Logger;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
+import me.itzsomebody.radon.Logger;
 
 /**
  * Inlines goto-goto sequences by directing the first goto's target to the second goto's target.

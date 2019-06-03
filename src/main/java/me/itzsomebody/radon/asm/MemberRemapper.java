@@ -17,9 +17,9 @@
 
 package me.itzsomebody.radon.asm;
 
-import org.objectweb.asm.commons.SimpleRemapper;
-
 import java.util.Map;
+
+import org.objectweb.asm.commons.SimpleRemapper;
 
 /**
  * Custom implementation of ASM's SimpleRemapper taking in account for field descriptions.

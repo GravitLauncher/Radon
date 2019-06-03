@@ -17,13 +17,21 @@
 
 package me.itzsomebody.radon.asm;
 
-import me.itzsomebody.radon.exceptions.StackEmulationException;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.MultiANewArrayInsnNode;
+
+import me.itzsomebody.radon.exceptions.StackEmulationException;
 
 /**
  * Attempts to emulate the stack in a method up to a breakpoint.

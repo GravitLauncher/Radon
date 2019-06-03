@@ -17,12 +17,19 @@
 
 package me.itzsomebody.radon.transformers.obfuscators.flow;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+
 import me.itzsomebody.radon.Logger;
 import me.itzsomebody.radon.utils.RandomUtils;
 import me.itzsomebody.radon.utils.StringUtils;
-import org.objectweb.asm.tree.*;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This replaces all gotos with the equivalent: if (false) throw null;.

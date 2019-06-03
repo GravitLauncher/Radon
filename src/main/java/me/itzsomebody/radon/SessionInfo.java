@@ -17,11 +17,11 @@
 
 package me.itzsomebody.radon;
 
-import me.itzsomebody.radon.exclusions.ExclusionManager;
-import me.itzsomebody.radon.transformers.Transformer;
-
 import java.io.File;
 import java.util.List;
+
+import me.itzsomebody.radon.exclusions.ExclusionManager;
+import me.itzsomebody.radon.transformers.Transformer;
 
 public class SessionInfo {
     private File input;

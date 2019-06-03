@@ -17,12 +17,25 @@
 
 package me.itzsomebody.radon;
 
-import me.itzsomebody.radon.asm.ClassTree;
-import me.itzsomebody.radon.asm.ClassWrapper;
-import me.itzsomebody.radon.exceptions.MissingClassException;
-import me.itzsomebody.radon.exceptions.RadonException;
-import me.itzsomebody.radon.transformers.miscellaneous.TrashClasses;
-import me.itzsomebody.radon.utils.IOUtils;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -30,13 +43,12 @@ import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import me.itzsomebody.radon.asm.ClassTree;
+import me.itzsomebody.radon.asm.ClassWrapper;
+import me.itzsomebody.radon.exceptions.MissingClassException;
+import me.itzsomebody.radon.exceptions.RadonException;
+import me.itzsomebody.radon.transformers.miscellaneous.TrashClasses;
+import me.itzsomebody.radon.utils.IOUtils;
 
 /**
  * This class is how Radon processes the provided {@link SessionInfo} to produce an obfuscated jar.
